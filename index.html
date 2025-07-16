@@ -16,24 +16,39 @@
 
         const { useState } = React;
 
-        const animalsChoices = ["Cane", "Gatto", "Pappagallo", "Cavallo", "Panda"];
+        const animalsDefault = ["Cane", "Gatto", "Pappagallo", "Cavallo", "Panda"];
 
         const ReactApp = () => {
 
             const animalList = []
-            animalsChoices.forEach(animal => {
+            animalsDefault.forEach(animal => {
                 animalList.push(<li key={animal}>{animal}</li>)
             });
 
-            return (
-                <details>
-                    <summary>Animali</summary>
+            const [animals, setAnimals] = useState([animalList])
 
-                    <ul>
-                        {animalList}
-                    </ul>
-                </details>
-            )
+            const animalsChoices = ["Leone", "Lama", "Coccodrillo", "Lucertola", "Pipistrello"];
+
+            const handleAddAnimal = () => {
+                const available = animalsChoices.filter(animal => !animals.includes(animal));
+                if (available.length === 0) return;
+                const randomAnimal = available[Math.floor(Math.random() * available.length)];
+                setAnimals([...animals, randomAnimal]);
+            }
+
+            return (
+                <>
+                    <button onClick={handleAddAnimal}>Aggiungi Animale</button>
+                    <details>
+                        <summary>Animali</summary>
+                        <ul>
+                            {animals.map(animal => (
+                                <li key={animal}>{animal}</li>
+                            ))}
+                        </ul>
+                    </details>
+                </>
+            );
         }
     </script>
 
