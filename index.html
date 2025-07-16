@@ -16,29 +16,82 @@
 
         const { useState } = React;
 
+        function Modal({
+            title,
+            content,
+            show = false,
+            onClose = () => { },
+            onConfirm = () => { }
+        }) {
+            return show && ReactDOM.createPortal(
+                <div className="modal-container">
+                    <div className="modal">
+                        <h2>{title}</h2>
+                        <div>{content}</div>
+                        <div style={{ marginTop: "20px", display: "flex", gap: "10px", justifyContent: "flex-end" }}>
+                            <button onClick={onClose}>Annulla</button>
+                            <button onClick={onConfirm}>Conferma</button>
+                        </div>
+                    </div>
+                </div>,
+                document.body
+            );
+        }
+
         const animalsDefault = ["Cane", "Gatto", "Pappagallo", "Cavallo", "Panda"];
 
         const ReactApp = () => {
 
-            const animalList = []
+            const animalList = [];
             animalsDefault.forEach(animal => {
-                animalList.push(<li key={animal}>{animal}</li>)
+                animalList.push(<li key={animal}>{animal}</li>);
             });
 
-            const [animals, setAnimals] = useState([animalList])
+            const [animals, setAnimals] = useState([animalList]);
+            const [showModal, setShowModal] = useState(false);
+            const [inputValue, setInputValue] = useState("");
 
-            const animalsChoices = ["Leone", "Lama", "Coccodrillo", "Lucertola", "Pipistrello"];
+            const handleOpenModal = () => {
+                setInputValue("");
+                setShowModal(true);
+            };
 
-            const handleAddAnimal = () => {
-                const available = animalsChoices.filter(animal => !animals.includes(animal));
-                if (available.length === 0) return;
-                const randomAnimal = available[Math.floor(Math.random() * available.length)];
-                setAnimals([...animals, randomAnimal]);
-            }
+            const handleCloseModal = () => {
+                setShowModal(false);
+            };
+
+            const handleConfirm = () => {
+                const trimmed = inputValue.trim();
+                if (
+                    trimmed &&
+                    !animals.includes(trimmed) &&
+                    !animalsDefault.includes(trimmed)
+                ) {
+                    setAnimals([...animals, trimmed]);
+                }
+                setShowModal(false);
+            };
+
+            const modalContent = (
+                <input
+                    type="text"
+                    placeholder="Inserisci un animale"
+                    value={inputValue}
+                    onChange={e => setInputValue(e.target.value)}
+                    autoFocus
+                />
+            );
 
             return (
                 <>
-                    <button onClick={handleAddAnimal}>Aggiungi Animale</button>
+                    <button onClick={handleOpenModal}>Aggiungi Animale</button>
+                    <Modal
+                        title="Aggiungi un animale"
+                        content={modalContent}
+                        show={showModal}
+                        onClose={handleCloseModal}
+                        onConfirm={handleConfirm}
+                    />
                     <details>
                         <summary>Animali</summary>
                         <ul>
